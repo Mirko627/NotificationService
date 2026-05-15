@@ -44,7 +44,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: PropertyService.API/Dockerfile
+          file: NotificationService.API/Dockerfile
           build-args: |
             MIRKO_NUGET_USERNAME=${{ secrets.MIRKO_NUGET_USERNAME }}
             MIRKO_NUGET_PWD=${{ secrets.MIRKO_NUGET_PWD }}
