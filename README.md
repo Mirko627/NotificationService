@@ -128,7 +128,7 @@ Il Notification Service utilizza il User Service per:
 | offer-events | OfferRejected  | Offer Service | Notifica il rifiuto di un'offerta                            |
 | visit-events | VisitCreated   | Visit Service | Notifica la creazione di una nuova richiesta di visita       |
 | visit-events | VisitConfirmed | Visit Service | Notifica la conferma di una visita da parte del proprietario |
-| visit-events | VisitCancelled | Visit Service | Notifica il rifiuto di una visita da parte del proprietario  |
+| visit-events | VisitRejected  | Visit Service | Notifica il rifiuto di una visita da parte del proprietario  |
 
 #### Gestione degli eventi
 
