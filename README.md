@@ -130,7 +130,7 @@ Il Notification Service utilizza il User Service per:
 | visit-events | VisitConfirmed | Visit Service | Notifica la conferma di una visita da parte del proprietario |
 | visit-events | VisitCancelled | Visit Service | Notifica il rifiuto di una visita da parte del proprietario  |
 
-### Gestione degli eventi
+#### Gestione degli eventi
 
 Il Notification Service ascolta gli eventi pubblicati dall'Offer Service e dal Visit Service e genera automaticamente notifiche per gli utenti coinvolti.
 
