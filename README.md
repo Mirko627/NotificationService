@@ -6,7 +6,7 @@ Il **Notification Service** è un microservizio responsabile della gestione dell
 
 Consente agli utenti autenticati di visualizzare le proprie notifiche, consultare quelle non lette e contrassegnarle come lette.
 
-Le notifiche vengono generate automaticamente in risposta agli eventi prodotti dagli altri microservizi del sistema, in particolare dall'**Offer Service**.
+Le notifiche vengono generate automaticamente in risposta agli eventi prodotti dagli altri microservizi del sistema, in particolare dall'**Offer Service** e dal **Visit Service**.
 
 ## Architettura
 
@@ -15,27 +15,27 @@ Il servizio fa parte di un'architettura a microservizi:
 * Espone API REST
 * Tutte le operazioni sono protette tramite autenticazione JWT
 * Comunica con il **User Service** per verificare l'esistenza degli utenti
-* Consuma eventi Apache Kafka provenienti dall'**Offer Service**
+* Consuma eventi Apache Kafka provenienti dall'**Offer Service** e dal **Visit Service**
 * Memorizza lo storico delle notifiche degli utenti
 
 ## Avvio del servizio
 
 Per avviare il servizio in locale:
 
-```bash id="h2w9ke"
+```bash
 # esempio
 dotnet run
 ```
 
 Oppure con Docker:
 
-```bash id="j7m4tn"
+```bash
 docker-compose up
 ```
 
 Il servizio sarà disponibile su:
 
-```id="c8x5ra"
+```text
 http://localhost:7805
 ```
 
@@ -43,7 +43,7 @@ http://localhost:7805
 
 Documentazione Swagger disponibile qui:
 
-```id="n4p7zu"
+```text
 http://localhost:7805/swagger/index.html
 ```
 
@@ -57,7 +57,7 @@ Tutte le operazioni richiedono un token JWT valido.
 
 Il client deve includere il token nell'header HTTP:
 
-```http id="w8r2fd"
+```http
 Authorization: Bearer <token>
 ```
 
@@ -117,23 +117,31 @@ Il Notification Service utilizza il User Service per:
 * verificare l'esistenza degli utenti destinatari
 * recuperare le informazioni necessarie per l'invio delle notifiche
 
-### Eventi Kafka consumati
+### Kafka
 
-| Topic        | Evento        | Provenienza   | Descrizione                                |
-| ------------ | ------------- | ------------- | ------------------------------------------ |
-| offer-events | OfferCreated  | Offer Service | Notifica la creazione di una nuova offerta |
-| offer-events | OfferAccepted | Offer Service | Notifica l'accettazione di un'offerta      |
-| offer-events | OfferRejected | Offer Service | Notifica il rifiuto di un'offerta          |
+#### Eventi Kafka consumati
+
+| Topic        | Evento         | Provenienza   | Descrizione                                                  |
+| ------------ | -------------- | ------------- | ------------------------------------------------------------ |
+| offer-events | OfferCreated   | Offer Service | Notifica la creazione di una nuova offerta                   |
+| offer-events | OfferAccepted  | Offer Service | Notifica l'accettazione di un'offerta                        |
+| offer-events | OfferRejected  | Offer Service | Notifica il rifiuto di un'offerta                            |
+| visit-events | VisitCreated   | Visit Service | Notifica la creazione di una nuova richiesta di visita       |
+| visit-events | VisitConfirmed | Visit Service | Notifica la conferma di una visita da parte del proprietario |
+| visit-events | VisitCancelled | Visit Service | Notifica il rifiuto di una visita da parte del proprietario  |
 
 ### Gestione degli eventi
 
-Il Notification Service ascolta gli eventi pubblicati dall'Offer Service e genera automaticamente notifiche per gli utenti coinvolti.
+Il Notification Service ascolta gli eventi pubblicati dall'Offer Service e dal Visit Service e genera automaticamente notifiche per gli utenti coinvolti.
 
 Ad esempio:
 
 * quando viene creata un'offerta, il proprietario dell'immobile può ricevere una notifica
 * quando un'offerta viene accettata, l'autore dell'offerta riceve una notifica di conferma
 * quando un'offerta viene rifiutata, l'autore dell'offerta riceve una notifica di rifiuto
+* quando viene richiesta una visita, il proprietario dell'immobile può ricevere una notifica
+* quando una visita viene confermata, il visitatore riceve una notifica di conferma
+* quando una visita viene rifiutata, il visitatore riceve una notifica di rifiuto
 
 ## Controlli automatici
 
@@ -145,8 +153,8 @@ Ad esempio:
 
 ## Flusso degli eventi
 
-1. L'Offer Service pubblica un evento Kafka.
-2. Il Notification Service riceve l'evento.
+1. L'Offer Service o il Visit Service pubblica un evento Kafka.
+2. Il Notification Service riceve un evento supportato.
 3. Viene identificato l'utente destinatario.
 4. Viene creata una nuova notifica.
 5. La notifica diventa disponibile tramite le API REST.
